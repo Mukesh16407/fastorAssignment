@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { MainButton } from "../components/Buton";
+import { MainTextField } from "../components/MainInput";
+import { MainWrapper } from "./MobileNumberVerification";
 
 const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
   const [otp, setOtp] = useState(new Array(length).fill(""));
@@ -60,29 +61,18 @@ const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
   };
 
   return (
-    <Box>
-      <Box
+    <MainWrapper>
+      <Button
         sx={{
-          width: "50%",
-          margin: "auto",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: 20,
-          justifyContent: "center",
+          marginRight: "82%",
+          marginBottom: "20%",
+          border: "1px solid #DADADA",
         }}
       >
-        <Button
-          sx={{
-            marginRight: "60%",
-            marginBottom: "20%",
-            border: "1px solid #DADADA",
-          }}
-        >
-          <ArrowBackIosNewIcon />
-        </Button>
-        <Box sx={{ marginBottom: "30px", marginLeft: "23px" }}>
+        <ArrowBackIosNewIcon />
+      </Button>
+      <Box sx={{ display: "flex", width: "100%" }}>
+        <Box sx={{ marginBottom: "30px" }}>
           <Typography variant="h6" sx={{ fontSize: 26, fontWeight: 700 }}>
             OTP Verification
           </Typography>
@@ -99,44 +89,45 @@ const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
             Mobile Number.
           </Typography>
         </Box>
-
-        <form>
-          <Box
-            sx={{
-              marginBottom: "40px",
-              display: "flex",
-              flexDirection: "row",
-              gap: "15px",
-            }}
-          >
-            {otp.map((value, index) => (
-              <TextField
-                key={index}
-                type="text"
-                inputRef={(input) => (inputRefs.current[index] = input)}
-                value={value}
-                onChange={(e) => handleChange(index, e)}
-                onClick={() => handleClick(index)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className="otpInput"
-                sx={{
-                  background: "#F7F8F9",
-                  height: "100%",
-                  width: "40px",
-                  textAlign: "center",
-                  fontSize: "1.2em",
-                }}
-              />
-            ))}
-          </Box>
-          <MainButton type="submit">Verify</MainButton>
-        </form>
-        <Box sx={{ marginTop: "10px" }}>
-          <Typography variant="p">Didn’t received code? Resend</Typography>
-        </Box>
       </Box>
-    </Box>
+
+      <form>
+        <Box
+          sx={{
+            marginBottom: "40px",
+            display: "flex",
+            flexDirection: "row",
+            gap: "15px",
+          }}
+        >
+          {otp.map((value, index) => (
+            <MainTextField
+              key={index}
+              type="text"
+              inputRef={(input) => (inputRefs.current[index] = input)}
+              value={value}
+              onChange={(e) => handleChange(index, e)}
+              onClick={() => handleClick(index)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              sx={{ textAlign: "centre" }}
+            />
+          ))}
+        </Box>
+        <MainButton type="submit">Verify</MainButton>
+      </form>
+      <Box sx={{ marginTop: "10px" }}>
+        <Typography variant="p">Didn’t received code? Resend</Typography>
+      </Box>
+    </MainWrapper>
   );
 };
 
 export default OTPVerification;
+
+// sx={{
+//   background: "#F7F8F9",
+//   height: "100%",
+//   width: "40px",
+//   textAlign: "center",
+//   fontSize: "1.2em",
+// }}

@@ -28,6 +28,6 @@ export const MainButton = styled(Button, {
   minWidth: width,
 
   "&:hover": {
-    backgroundColor: "#ff8247",
+    backgroundColor: "#ff6a73",
   },
 }));

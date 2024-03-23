@@ -1,6 +1,18 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, styled } from "@mui/material";
 import { useState } from "react";
 import { MainButton } from "../components/Buton";
+import { register } from "../functions/auth";
+
+export const MainWrapper = styled(Box)({
+  width: "50%",
+  margin: "auto",
+  height: "100vh",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  padding: 20,
+  justifyContent: "center",
+});
 
 const MobileNumberVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -14,21 +26,13 @@ const MobileNumberVerification = () => {
     event.preventDefault();
     setIsSubmitted(true);
     // Simulate sending verification code
+    const dial_code = +91;
+    register(dial_code, phoneNumber);
     console.log("Sending verification code to:", phoneNumber);
   };
 
   return (
-    <Box
-      sx={{
-        width: "50%",
-        margin: "auto",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: 20,
-        justifyContent: "center",
-      }}
-    >
+    <MainWrapper>
       <Box sx={{ marginBottom: "30px" }}>
         <Typography variant="h6" sx={{ fontSize: 26, fontWeight: 700 }}>
           Enter Your Mobile Number
@@ -64,7 +68,7 @@ const MobileNumberVerification = () => {
           <MainButton type="submit">Send Code</MainButton>
         </form>
       </Box>
-    </Box>
+    </MainWrapper>
   );
 };
 
