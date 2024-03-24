@@ -16,28 +16,5 @@
   font-size: 1.2em;
 }
 
-.navbar ul li {
-  margin-left: 5px;
-  font-size: 12px;
-}
-
-.Ul {
-  gap: 5px;
-}
-
-.header_icon {
-  width: 12px;
-}
-
-.navLink {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  color: black;
-  gap: 3px;
-}
-.navLink:hover {
-  color: rgb(255, 140, 0);
-}
 
 

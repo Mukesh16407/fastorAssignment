@@ -63,14 +63,24 @@ const OTPVerification = ({ length = 6 }) => {
             },
           }
         );
-        if (response.status === 200) {
-          localStorage.setItem("userdbtoken", response.data.userToken);
-          toast.success(response.data.message);
+        console.log("Response data:", response.data);
+        if (
+          response.status === 200 &&
+          response.data &&
+          response.data.data &&
+          response.data.data.token
+        ) {
+          localStorage.setItem("userdbtoken", response.data.data.token);
+          toast.success("Login successful!");
           setTimeout(() => {
             navigate("/");
           }, 5000);
         } else {
-          toast.error(response.response.data.error);
+          if (response && response.data && response.data.error) {
+            toast.error(response.data.error);
+          } else {
+            toast.error("An error occurred. Please try again later.");
+          }
         }
       } catch (error) {
         console.error("Error registering user:", error);
