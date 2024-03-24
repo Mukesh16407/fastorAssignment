@@ -1,7 +1,11 @@
-import { Box, Button, TextField, Typography, styled } from "@mui/material";
+import { Box, TextField, Typography, styled } from "@mui/material";
 import { useState } from "react";
 import { MainButton } from "../components/Buton";
-import { register } from "../functions/auth";
+import CircularProgress from "@mui/material/CircularProgress";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+import { ToastContainer, toast } from "react-toastify";
 
 export const MainWrapper = styled(Box)({
   width: "50%",
@@ -17,18 +21,46 @@ export const MainWrapper = styled(Box)({
 const MobileNumberVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [spiner, setSpiner] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setPhoneNumber(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitted(true);
-    // Simulate sending verification code
-    const dial_code = +91;
-    register(dial_code, phoneNumber);
-    console.log("Sending verification code to:", phoneNumber);
+
+    if (phoneNumber === "") {
+      toast.error("Enter Your Email !");
+    } else {
+      setSpiner(true);
+
+      const formData = new URLSearchParams();
+      formData.append("phone", phoneNumber);
+      formData.append("dial_code", "+91");
+
+      try {
+        const response = await axios.post(
+          "https://staging.fastor.in/v1/pwa/user/register",
+          formData.toString(),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+        if (response.status === 200) {
+          setSpiner(false);
+          navigate("/user/otp", { state: phoneNumber });
+        } else {
+          toast.error(response.response.data.error);
+        }
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
+    }
   };
 
   return (
@@ -65,9 +97,19 @@ const MobileNumberVerification = () => {
               marginBottom: "20px",
             }}
           />
-          <MainButton type="submit">Send Code</MainButton>
+          <MainButton type="submit">
+            Send Code{" "}
+            {spiner ? (
+              <span>
+                <CircularProgress />
+              </span>
+            ) : (
+              ""
+            )}
+          </MainButton>
         </form>
       </Box>
+      <ToastContainer />
     </MainWrapper>
   );
 };

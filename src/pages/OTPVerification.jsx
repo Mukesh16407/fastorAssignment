@@ -7,12 +7,15 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { MainButton } from "../components/Buton";
 import { MainTextField } from "../components/MainInput";
 import { MainWrapper } from "./MobileNumberVerification";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
-const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
+const OTPVerification = ({ length = 6 }) => {
   const [otp, setOtp] = useState(new Array(length).fill(""));
   const inputRefs = useRef([]);
-
-  console.log(inputRefs, "InputRef");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -29,22 +32,49 @@ const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
 
-    // submit trigger
-    const combinedOtp = newOtp.join("");
-    if (combinedOtp.length === length) onOtpSubmit(combinedOtp);
-
     // Move to next input if current field is filled
     if (value && index < length - 1 && inputRefs.current[index + 1]) {
       inputRefs.current[index + 1].focus();
     }
   };
 
-  const handleClick = (index) => {
-    inputRefs.current[index].setSelectionRange(1, 1);
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    const combinedOtp = otp.join("");
+    if (!combinedOtp) {
+      toast.error("Enter Your Otp");
+    } else if (!/^\d+$/.test(combinedOtp)) {
+      toast.error("Enter Valid Otp");
+    } else if (combinedOtp.length < 6) {
+      toast.error("Otp Length minimum 6 digit");
+    } else {
+      const formData = new URLSearchParams();
+      formData.append("phone", location.state);
+      formData.append("dial_code", "+91");
+      formData.append("otp", combinedOtp);
 
-    // optional
-    if (index > 0 && !otp[index - 1]) {
-      inputRefs.current[otp.indexOf("")].focus();
+      try {
+        const response = await axios.post(
+          "https://staging.fastor.in/v1/pwa/user/login",
+          formData.toString(),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+        if (response.status === 200) {
+          localStorage.setItem("userdbtoken", response.data.userToken);
+          toast.success(response.data.message);
+          setTimeout(() => {
+            navigate("/");
+          }, 5000);
+        } else {
+          toast.error(response.response.data.error);
+        }
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
     }
   };
 
@@ -61,13 +91,14 @@ const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
   };
 
   return (
-    <MainWrapper>
+    <MainWrapper sx={{ width: "30%" }}>
       <Button
         sx={{
           marginRight: "82%",
           marginBottom: "20%",
           border: "1px solid #DADADA",
         }}
+        onClick={() => navigate("/login")}
       >
         <ArrowBackIosNewIcon />
       </Button>
@@ -91,7 +122,7 @@ const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
         </Box>
       </Box>
 
-      <form>
+      <form onSubmit={handleVerify}>
         <Box
           sx={{
             marginBottom: "40px",
@@ -107,27 +138,21 @@ const OTPVerification = ({ length = 4, onOtpSubmit = () => {} }) => {
               inputRef={(input) => (inputRefs.current[index] = input)}
               value={value}
               onChange={(e) => handleChange(index, e)}
-              onClick={() => handleClick(index)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              sx={{ textAlign: "centre" }}
+              sx={{ textAlign: "center" }}
             />
           ))}
         </Box>
         <MainButton type="submit">Verify</MainButton>
       </form>
       <Box sx={{ marginTop: "10px" }}>
-        <Typography variant="p">Didn’t received code? Resend</Typography>
+        <Typography variant="p">
+          Didn’t received code? <Link to="#">Resend</Link>
+        </Typography>
       </Box>
+      <ToastContainer />
     </MainWrapper>
   );
 };
 
 export default OTPVerification;
-
-// sx={{
-//   background: "#F7F8F9",
-//   height: "100%",
-//   width: "40px",
-//   textAlign: "center",
-//   fontSize: "1.2em",
-// }}
