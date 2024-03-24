@@ -37,9 +37,9 @@ function App() {
         <Route
           path="user/otp"
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <OTPVERification length={6} onOtpSubmit={onOtpSubmit} />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
