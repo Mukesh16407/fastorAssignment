@@ -1,10 +1,10 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import useInternetStatus from "../hooks/useInternetStatus";
 import Restrocard from "../components/Restrocard";
-import ImageCrousel from "../components/ImageCrousel";
 import { Carousel } from "react-responsive-carousel";
-import { Button, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
@@ -69,7 +69,25 @@ export const Home = () => {
       console.log("Error", error);
     }
   };
-  console.log(filterrestro, "filterrestro");
+
+  const internetStatus = useInternetStatus();
+
+  if (internetStatus === false)
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <p>Check your internet connection</p>
+        <div style={{ margin: "auto" }}>
+          <CircularProgress />
+        </div>
+      </div>
+    );
 
   return (
     <div>
